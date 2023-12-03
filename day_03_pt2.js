@@ -1,24 +1,47 @@
-let matrix = [
-  ["4", "6", "7", ".", ".", "1", "1", "4", ".", "."],
-  [".", ".", ".", "*", ".", ".", ".", ".", ".", "."],
-  [".", ".", "3", "5", ".", ".", "6", "3", "3", "."],
-  [".", ".", ".", ".", ".", ".", "#", ".", ".", "."],
-  ["6", "1", "7", "*", ".", ".", ".", ".", ".", "."],
-  [".", ".", ".", ".", ".", "+", ".", "5", "8", "."],
-  [".", ".", "5", "9", "2", ".", ".", ".", ".", "."],
-  [".", ".", ".", ".", ".", ".", "7", "5", "5", "."],
-  [".", ".", ".", "$", ".", "*", ".", ".", ".", "."],
-  [".", "6", "6", "4", ".", "5", "9", "8", ".", "."],
-]
+let input = require("fs")
+  .readFileSync("day_03_input.txt")
+  .toString()
+  .split(/\r\n/)
 
-console.table(matrix)
+let matrix = []
 
-console.log(returnAdjacentNumbersPosition(1, 3))
+for (let y = 0; y < input.length; y++) {
+  let row = []
+  for (let x = 0; x < input[y].length; x++) {
+    row.push(input[y][x])
+  }
+  matrix.push(row)
+}
 
-console.log(printFullNumbers(0, 2))
+//console.table(matrix)
+
+let solutionArr = []
+
+for (let y = 0; y < matrix.length; y++) {
+  for (let x = 0; x < matrix[y].length; x++) {
+    let currentChar = matrix[y][x]
+    //check if gear, and then check adjaceny and store adjacency numbers
+    if (currentChar === "*") {
+      let adjacentPositions = returnAdjacentNumbersPosition(y, x)
+      let fullNumbers = adjacentPositions.map((coord) =>
+        printFullNumbers(coord[0], coord[1])
+      )
+      let dedupedNum = Array.from(new Set(fullNumbers))
+      //console.log(dedupedNum)
+      if (dedupedNum.length === 2) {
+        solutionArr.push(parseInt(dedupedNum[0]) * parseInt(dedupedNum[1]))
+      }
+    }
+  }
+}
+console.log(solutionArr.reduce(sum, 0))
+
+function sum(acc, a) {
+  return acc + a
+}
 
 function returnAdjacentNumbersPosition(y, x) {
-  console.log(matrix[y][x])
+  //console.log(matrix[y][x])
   let positions = []
   for (let j = y - 1; j <= y + 1; j++) {
     for (let i = x - 1; i <= x + 1; i++) {
@@ -39,7 +62,6 @@ function returnAdjacentNumbersPosition(y, x) {
 function checkNumber(char) {
   return /^\d+$/.test(char)
 }
-
 function printFullNumbers(y, x) {
   let fullNumber = []
   let i = x

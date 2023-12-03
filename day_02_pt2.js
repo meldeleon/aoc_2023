@@ -1,5 +1,3 @@
-const { parse } = require("path")
-
 let input = require("fs")
   .readFileSync("day_02_input.txt")
   .toString()
