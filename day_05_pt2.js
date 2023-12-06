@@ -8,6 +8,7 @@ let input = require("fs")
 let seedsLine = input[0].split(": ")[1].split(" ")
 console.log({ seedsLine })
 
+// create a subset of ranged seeds
 let rangedSeeds = []
 
 for (let i = 0; i < seedsLine.length; i += 2) {
@@ -131,9 +132,11 @@ function turnRangeIntoArr(startingVal, endingVal) {
 }
 
 function findOverlap(startingVal1, endingVal1, startingVal2, endingVal2) {
-  let largerStart = Math.max(startingVal1, startingVal2)
-  let smallerEnd = Math.min(endingVal1, endingVal2)
-  return [largerStart, smallerEnd]
+  if (startingVal1 <= endingVal2 && startingVal2 <= endingVal1) {
+    let largerStart = Math.max(startingVal1, startingVal2)
+    let smallerEnd = Math.min(endingVal1, endingVal2)
+    return [largerStart, smallerEnd]
+  }
 }
 
 function findTheBreak(i, input) {
