@@ -131,14 +131,6 @@ function turnRangeIntoArr(startingVal, endingVal) {
   return arr
 }
 
-function findOverlap(startingVal1, endingVal1, startingVal2, endingVal2) {
-  if (startingVal1 <= endingVal2 && startingVal2 <= endingVal1) {
-    let largerStart = Math.max(startingVal1, startingVal2)
-    let smallerEnd = Math.min(endingVal1, endingVal2)
-    return [largerStart, smallerEnd]
-  }
-}
-
 function findTheBreak(i, input) {
   let count = 0
   while (true) {
