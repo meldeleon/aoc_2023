@@ -1,7 +1,7 @@
 const input = require("fs")
   .readFileSync("day_05_input.txt")
   .toString()
-  .split(/\r\n/)
+  .split(/\n/)
 
 //build our data structure of seedsList and Maps:
 const maps = buildMaps(input)

@@ -1,9 +1,9 @@
 let input = require("fs")
   .readFileSync("day_05_input.txt")
   .toString()
-  .split(/\r\n/)
+  .split(/\n/)
 
-// console.log(input)
+//console.log(input)
 
 let seedsList = []
 
@@ -82,6 +82,8 @@ for (let i = 0; i < input.length; i++) {
       maps.humidity_to_location = humidityToLocation
   }
 }
+
+console.log(maps)
 
 function findTheBreak(i, input) {
   let count = 0
