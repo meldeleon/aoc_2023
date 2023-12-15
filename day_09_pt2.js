@@ -12,7 +12,7 @@ let solutionArr = []
 for (let i=0; i<input.length; i++){
     currentSeq = input[i]
     let builtSequences = buildSequences(currentSeq)
-    solutionArr.push(fillNext(builtSequences))
+    solutionArr.push(fillPrevious(builtSequences))
 }
 
 console.log(solutionArr.reduce(sum,0))
@@ -30,6 +30,20 @@ function buildSequences(initalSequence){
     }
     return sequences
 }
+
+function fillPrevious(sequences){
+    let newSequences = sequences.map(seq => seq.map( x => x))
+    //unshift a zero onto the last sequence
+    sequences[sequences.length-1].unshift(0)
+    //iterate over all the sequences
+    for (let i = sequences.length - 2; i >= 0; i--){
+        let currentSeq = sequences[i]
+        let predictedVal = currentSeq[0] - newSequences[i+1][0]
+        newSequences[i].unshift(predictedVal)
+    }
+    return newSequences[0][0]
+}
+
 
 function fillNext(sequences){
     //create new sequences
