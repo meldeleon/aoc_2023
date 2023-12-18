@@ -1,24 +1,38 @@
-let lightA = 6
-let lightB = 10
-let lightC = 15
+class Graph {
+  constructor() {
+    this.connectedPipes = new Map()
+  }
+  getPipe(p) {
+    return this.connectedPipes.get(p)
+  }
+  addPipe(p) {
+    this.connectedPipes.set(p, [])
+  }
+  addConnector(p1, p2) {
+    this.connectedPipes.get(p1).push(p2)
+    this.connectedPipes.get(p2).push(p1)
+  }
+  printGraph() {
+    let getKeys = this.connectedPipes.keys()
 
-let allLights = [6, 10, 15]
-
-for (let n = 1; n < 10; n++) {
-  let product = lightA * n
-  console.log(product)
-  let modulos = allLights.map((x) => product % x)
-  console.log({ modulos })
-  if (checkIfAllZero(modulos)) {
-    console.log(cycleOfN)
-    break
+    for (let i of getKeys) {
+      let getVals = this.connectedPipes.get(i)
+      let concat = ""
+      for (let j of getVals) {
+        concat += j + " "
+        console.log(i + " => " + concat)
+      }
+    }
   }
 }
 
-function checkIfAllZero(modulos) {
-  return modulos.filter((x) => x === 0).length === modulos.length
-}
+const butts = new Graph()
 
-// 6 12 18 24 30 36 42 48 54 60
-// 10, 20, 30
-// 15, 30
+butts.addPipe("0,1")
+butts.addPipe("0,2")
+butts.addConnector("0,1", "0,2")
+
+let pipe = "0,1"
+console.log(butts.getPipe(pipe))
+pipe = "0,5"
+console.log(butts.getPipe(pipe))
