@@ -31,27 +31,41 @@ const pipes = require("fs")
     })
     return segmentedRow
   })
-console.table(pipes)
 
+//globals
+console.table(pipes)
 const pipeGraph = new Graph()
+const connectionsHaveBeenAdded = new Set()
 
 // start by adding our starting pipe to our graph and populating our stack
-pipeGraph.addPipe(startingPipeLocation.join())
 let connectedToStart = findStartingPipeConnections(startingPipeLocation)
-addConnectionsToGraph(startingPipeLocation, connectedToStart)
-console.log(pipeGraph)
-
-//initial state of stack is whatever is connected to the start
 let stack = connectedToStart
+pipeGraph.addPipe(startingPipeLocation.join())
+addConnectionsToGraph(startingPipeLocation, connectedToStart)
 
+let count = 0
 while (true) {
   let currentPipe = stack.shift()
-  //if pipe not in graph add it
+  //if the current pipe is not in graph add it
   if (!pipeGraph.getPipe(currentPipe)) {
     pipeGraph.addPipe(currentPipe.join())
   }
+  //find all connected pipes and add them to the graph
   let connectedPipes = getConnectedPipes(currentPipe)
   addConnectionsToGraph(currentPipe, connectedPipes)
+
+  //iterate over each connected pipe, and if it's been added before do not push to stack, otherwise push to stack
+  connectedPipes.forEach((pipe) => {
+    if (!connectionsHaveBeenAdded.has(pipe.join())) {
+      stack.push(pipe)
+    }
+  })
+  if (stack <= 0) {
+    break
+  }
+  count++
+  console.log(count)
+  console.log(pipeGraph)
 }
 
 function findStartingPipeConnections(startingPipeLocation) {
@@ -62,7 +76,7 @@ function findStartingPipeConnections(startingPipeLocation) {
     [parseInt(row), parseInt(col) + 1],
     [parseInt(row), parseInt(col) - 1],
   ]
-  console.log({ adjacentPipes })
+  // console.log({ adjacentPipes })
   let connectedPipes = []
   adjacentPipes.forEach((adjPipe) => {
     //check for edge cases
@@ -117,11 +131,16 @@ function getConnectedPipes(pipeLocation) {
 function checkForEdgeCase(row, col) {
   return 0 <= row < pipes.length && 0 <= col < pipes[0].length
 }
+
 function addConnectionsToGraph(p, connectedPipes) {
+  if (!pipeGraph.getPipe(p)) {
+    pipeGraph.addPipe(p.join())
+  }
   connectedPipes.forEach((pipe) => {
     if (!pipeGraph.getPipe(pipe)) {
       pipeGraph.addPipe(pipe.join())
     }
     pipeGraph.addConnector(p.join(), pipe.join())
   })
+  connectionsHaveBeenAdded.add(p.join())
 }
