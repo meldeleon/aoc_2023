@@ -6,17 +6,54 @@ class Graph {
     return this.connectedPipes.get(p)
   }
   addPipe(p) {
-    this.connectedPipes.set(p, [])
+    this.connectedPipes.set(p, new Set())
   }
-
   addConnector(p1, p2) {
-    this.connectedPipes.get(p1).push(p2)
-    this.connectedPipes.get(p2).push(p1)
+    this.connectedPipes.get(p1).add(p2)
+    this.connectedPipes.get(p2).add(p1)
+  }
+  calculateDistance(p1, p2) {
+    let [path1Start, path2Start] = this.connectedPipes.get(p1)
+    let path1 = this.buildPath(p1, path1Start, p2)
+    let path2 = this.buildPath(p1, path2Start, p2)
+    console.log(path1, path2)
+    if (path1.length <= path2.length) {
+      return path1.length
+    } else {
+      return path2.length
+    }
+  }
+  buildPath(p1, pathStart, p2) {
+    let path = [p1, pathStart]
+    let endCondition = false
+    if (pathStart === p2) {
+      return path
+    } else {
+      while (true) {
+        let currentPipe = path[path.length - 1]
+        let nextPipes = []
+        this.connectedPipes
+          .get(currentPipe)
+          .forEach((pipe) => nextPipes.push(pipe))
+        for (let i = 0; i < nextPipes.length; i++) {
+          if (!path.includes(nextPipes[i])) {
+            path.push(nextPipes[i])
+            console.log(`we are pushing ${nextPipes[i]} to the path`)
+          }
+          if (nextPipes[i] === p2) {
+            endCondition = true
+          }
+        }
+        if (endCondition) {
+          return path
+          break
+        }
+      }
+    }
   }
 }
 
 let startingPipeLocation
-
 //read input
 const pipes = require("fs")
   .readFileSync("day_10_input.txt")
@@ -44,6 +81,7 @@ pipeGraph.addPipe(startingPipeLocation.join())
 addConnectionsToGraph(startingPipeLocation, connectedToStart)
 
 let count = 0
+//building the graph
 while (true) {
   let currentPipe = stack.shift()
   //if the current pipe is not in graph add it
@@ -64,9 +102,25 @@ while (true) {
     break
   }
   count++
-  console.log(count)
-  console.log(pipeGraph)
+  // console.log(count)
+  // console.log(pipeGraph)
 }
+console.log(pipeGraph.connectedPipes)
+
+//create a loop array
+let distances = []
+for (let pipe of pipeGraph.connectedPipes) {
+  console.log(pipe[0])
+  let distance = pipeGraph.calculateDistance(
+    startingPipeLocation.join(),
+    pipe[0]
+  )
+  distances.push(distance)
+  console.log(distances)
+}
+let solution = Math.max(...distances)
+console.log(distances)
+console.log(`the solution is ${solution}`)
 
 function findStartingPipeConnections(startingPipeLocation) {
   let [row, col] = startingPipeLocation
@@ -133,13 +187,15 @@ function checkForEdgeCase(row, col) {
 }
 
 function addConnectionsToGraph(p, connectedPipes) {
-  if (!pipeGraph.getPipe(p)) {
-    pipeGraph.addPipe(p.join())
-  }
   connectedPipes.forEach((pipe) => {
-    if (!pipeGraph.getPipe(pipe)) {
+    //if pipe has not been added, add it.
+    if (!pipeGraph.getPipe(pipe.join())) {
+      // console.log(
+      //   `${pipe} not found, adding it now, ${pipeGraph.getPipe(pipe)}`
+      // )
       pipeGraph.addPipe(pipe.join())
     }
+    //if the pipe alread has the connector, do nothing
     pipeGraph.addConnector(p.join(), pipe.join())
   })
   connectionsHaveBeenAdded.add(p.join())
