@@ -1,36 +1,3 @@
-//create a graph clas
-
-const { get } = require("http")
-
-class Graph {
-  constructor(pipeCount) {
-    this.pipeCount = pipeCount
-    this.connectedPipes = new Map()
-  }
-  addPipe(p) {
-    this.connectedPipes.set(p, [])
-  }
-  addConnector(p1, p2) {
-    this.connectedPipes.get(p1).push(p2)
-    this.connectedPipes.get(p2).push(p1)
-  }
-  printGraph() {
-    let getKeys = this.connectedPipes.keys()
-
-    for (let i of getKeys) {
-      let getVals = this.connectedPipes.get(i)
-      let concat = ""
-      for (let j of getVals) {
-        concat += j + " "
-        console.log(i + " => " + cocat)
-      }
-    }
-  }
-
-  // bfs(p)
-  // dfs(p)
-}
-
 //constants for mapping data
 const pipeTypes = {
   "|": ["N", "S"],

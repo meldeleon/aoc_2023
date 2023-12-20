@@ -5,7 +5,7 @@ const input = require("fs")
   .toString()
   .split(/\r\n/)
   .map((x) => x.split(""))
-//console.table(input)
+console.table(input)
 const emptyRows = findEmptyRows(input)
 const emptyCols = findEmptyCols(input)
 //create a placeholderEmptyRow
@@ -48,7 +48,7 @@ for (let row = 0; row < expandedUniverse.length; row++) {
   }
 }
 
-//console.log(galaxies)
+console.log(galaxies)
 
 //find the combination of all the galaxies
 let combinations = new Set()
