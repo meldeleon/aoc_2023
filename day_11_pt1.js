@@ -3,7 +3,7 @@ const exp = require("constants")
 const input = require("fs")
   .readFileSync("day_11_input.txt")
   .toString()
-  .split(/\r\n/)
+  .split(/\n/)
   .map((x) => x.split(""))
 console.table(input)
 const emptyRows = findEmptyRows(input)
@@ -38,7 +38,7 @@ for (let row = 0; row < input.length; row++) {
   }
 }
 
-//console.table(expandedUniverse)
+console.table(expandedUniverse)
 const galaxies = []
 for (let row = 0; row < expandedUniverse.length; row++) {
   for (let col = 0; col < expandedUniverse[row].length; col++) {

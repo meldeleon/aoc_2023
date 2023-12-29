@@ -1,12 +1,12 @@
 const input = require("fs")
   .readFileSync("day_11_input.txt")
   .toString()
-  .split(/\r\n/)
+  .split(/\n/)
   .map((x) => x.split(""))
 console.table(input)
 const emptyRows = findEmptyRows(input)
 const emptyCols = findEmptyCols(input)
-const expansionMultiplier = 2
+const expansionMultiplier = 999999
 //create a placeholderEmptyRow
 console.log(emptyCols, emptyRows)
 
@@ -52,17 +52,6 @@ function findDistance(combination) {
   return Math.abs(colA - colB) + Math.abs(rowA - rowB)
 }
 
-function expandGalaxyLocations(galaxies, emptyRows, emptyCols) {
-  return galaxies.map((galaxy) => {
-    let [row, col] = galaxy
-    let expandedRow =
-      row + returnExpansionMultiplier(row, emptyRows) * expansionMultiplier
-    let expandedCol =
-      col + returnExpansionMultiplier(col, emptyCols) * expansionMultiplier
-    return [expandedRow, expandedCol]
-  })
-}
-
 function findEmptyRows(universe) {
   let emptyRows = []
   for (let row = 0; row < universe.length; row++) {
@@ -93,15 +82,33 @@ function checkIfColEmpty(universe, colIndex) {
   return col.every((x) => x === ".")
 }
 
-function returnExpansionMultiplier(galaxyPos, emptiesArr) {
+function expandGalaxyLocations(galaxies, emptyRows, emptyCols) {
+  return galaxies.map((galaxy) => {
+    let [row, col] = galaxy
+    let addToRow = nthEmptyRowOrCol(row, emptyRows) * expansionMultiplier
+    let addToCol =nthEmptyRowOrCol(col, emptyCols) * expansionMultiplier
+    let expandedRow = row + addToRow
+    let expandedCol = col + addToCol
+    console.log(`for galaxy ${galaxy} we added [+${addToRow}, +${addToCol}]`)
+    return [expandedRow, expandedCol]
+  })
+}
+
+
+ 
+function nthEmptyRowOrCol(rowOrCol, emptiesArr) {
+  //check for left edge case
+  if (rowOrCol < emptiesArr[0]) {
+    return 0
+  //check for right edge case
+  } else if (rowOrCol >= emptiesArr[emptiesArr.length - 1]) {
+    return emptiesArr.length
+  } else {
   for (let i = 0; i < emptiesArr.length; i++) {
     currentEmpty = emptiesArr[i]
-    if (galaxyPos <= emptiesArr[0]) {
-      return 0
-    } else if (galaxyPos > emptiesArr[emptiesArr.length - 1]) {
-      return emptiesArr.length
-    } else if (galaxyPos > currentEmpty && galaxyPos < emptiesArr[i + 1]) {
+    if (rowOrCol >= currentEmpty && rowOrCol < emptiesArr[i + 1]) {
       return i + 1
-    }
+    } 
   }
+}
 }
