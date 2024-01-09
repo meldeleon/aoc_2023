@@ -7,38 +7,72 @@ const records = require("fs")
     return [record.split(""), checksum.split(",").map((x) => parseInt(x))]
   })
 
-console.log(records)
+//console.log(records)
 
-// const solutions = []
+const solutions = []
 
-// records.forEach((line) => {
-//   let [record, checksum] = line
-//   let possibleRecords = generatePossibleRecords(record, checksum)
-//   solutions.push(possibleRecords.length)
-// })
+records.forEach((line) => {
+  let [record, checksum] = line
+  let possibleRecords = generatePossibleRecords(record, checksum)
+  solutions.push(possibleRecords.length)
+})
 
-// console.log(solutions)
-let test = [
-  ["?", "?", "?", ".", "#", "#", "#"],
-  [1, 1, 3],
-]
-let testHealedRecord = ["#", ".", "#", ".", "#", "#", "#"]
-console.log(validateRecord(testHealedRecord, test[1]))
-// console.log(generatePossibleRecords(test[0], test[1]))
+console.log(`the solutions is ${solutions.reduce(sum, 0)}`)
+
+//function that returns all possible combinations for unknown values
+function generatePossibleRecords(brokenRecord, checksum) {
+  let possiblePaths = [[]]
+  let unknownTubsIndices = returnUnknownIndices(brokenRecord)
+  //iterate over the unknown indices
+  for (let i = 0; i < unknownTubsIndices.length; i++) {
+    //create an array for new possible paths
+    let newPossiblePaths = []
+    //
+    for (let j = 0; j < possiblePaths.length; j++) {
+      //copy path, add 0 to it
+      let newPath0 = [...possiblePaths[j], "."]
+      newPossiblePaths.push(newPath0)
+      //copy path, add # to it
+      let newPath1 = [...possiblePaths[j], "#"]
+      newPossiblePaths.push(newPath1)
+    }
+    possiblePaths = newPossiblePaths
+  }
+  //console.log({ possiblePaths })
+  let healedRecords = []
+  possiblePaths.forEach((path) => {
+    let healedRecord = [...brokenRecord]
+    //iterate over all unknown indices
+    unknownTubsIndices.forEach((tubIndex, pathIndex) => {
+      //we are replacing the unknown tubs with possibly known tubs
+      healedRecord.splice(tubIndex, 1, path[pathIndex])
+    })
+    //console.log(healedRecord)
+    if (validateRecord(healedRecord, checksum)) {
+      healedRecords.push(healedRecord)
+    }
+  })
+  return healedRecords
+}
 
 //create a function that takes a record, and then returns true if it works with checksum, this has some assumption that there are no unknowns in the record
 function validateRecord(healedRecord, checksum) {
   let contiguousArr = []
   let currentContiguous = []
   for (let i = 0; i < healedRecord.length; i++) {
+    //check if current tub is broken, and there another tub after it
     if (healedRecord[i] === "#" && healedRecord[i + 1]) {
       currentContiguous.push(healedRecord[i])
-    } else if (
-      i === healedRecord.length - 1 ||
-      (healedRecord[i] === "." && currentContiguous.length > 0)
-    ) {
+    }
+    //check if tub is functioning and we have previously added tubs to the currentContiguous Arr
+    else if (healedRecord[i] === "." && currentContiguous.length > 0) {
       contiguousArr.push(currentContiguous.length)
       currentContiguous = []
+    }
+    //check the edge case -- if last & broken
+    else if (i === healedRecord.length - 1 && healedRecord[i] === "#") {
+      currentContiguous.push(healedRecord[i])
+      contiguousArr.push(currentContiguous.length)
     }
   }
   //console.log({ checksum }, { contiguousArr })
@@ -54,45 +88,6 @@ function compareCheckSums(checksumA, checksumB) {
     }
   }
   return true
-}
-
-// 2^n
-//function that returns all possible combinations for unknown values
-function generatePossibleRecords(brokenRecord, checksum) {
-  let possiblePaths = [[]]
-  let unknownTubsIndices = returnUnknownIndices(brokenRecord)
-  for (let i = 0; i < unknownTubsIndices.length; i++) {
-    let newPossiblePaths = []
-    for (let j = 0; j < possiblePaths.length; j++) {
-      //copy path, add 0 to it
-      let newPath0 = copyArr(possiblePaths[j])
-      newPath0.push(".")
-      newPossiblePaths.push(newPath0)
-      //copy path, add 1 to it
-      let newPath1 = copyArr(possiblePaths[j])
-      newPath1.push("#")
-      newPossiblePaths.push(newPath1)
-    }
-    possiblePaths = newPossiblePaths
-  }
-  console.log({ possiblePaths })
-  let healedRecords = []
-  possiblePaths.forEach((path) => {
-    let healedRecord = copyArr(brokenRecord)
-    unknownTubsIndices.forEach((tubIndex, pathIndex) => {
-      healedRecord.splice(tubIndex, 1, path[pathIndex])
-    })
-    console.log({ healedRecord })
-    if (validateRecord(healedRecord, checksum)) {
-      healedRecords.push(healedRecord)
-    }
-  })
-  return healedRecords
-}
-
-function copyArr(arr) {
-  let copy = arr.map((x) => x)
-  return copy
 }
 
 function sum(a, b) {
